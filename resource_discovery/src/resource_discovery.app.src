@@ -1,0 +1,36 @@
+%%% -*- mode:erlang -*-
+{application, resource_discovery,
+ [
+  % A quick description of the application.
+  {description, "Resource discovery & management"},
+
+  % The version of the applicaton
+  {vsn, "0.2.1.0"},
+
+  % All modules used by the application.
+  {modules,
+   [
+    	resource_discovery,
+      rd_app,
+      rd_server,
+      rd_sup
+   ]},
+
+  % All of the registered names the application uses.
+  {registered, []},
+
+  % Applications that are to be started prior to this one.
+  {applications,
+   [
+    kernel, 
+    stdlib
+   ]},
+
+  % configuration parameters
+  {env, []},
+  
+  % The M F A to start this application.
+  {mod, {rd_app,[]}}
+ ]
+}.
+
