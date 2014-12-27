@@ -8,21 +8,24 @@
 
 %client API ----------------------------------------------------
 register_worker(Pid) ->
-    mrs ! {register_worker, Pid}.
+    ?SERVER ! {register_worker, Pid}.
 
 store(Integers) when is_list(Integers) ->
-	lists:foreach(fun(X) -> mrs ! {store, X} end, Integers);	
+	lists:foreach(fun(X) -> ?SERVER ! {store, X} end, Integers);	
 store(Int) ->
-    mrs ! {store, Int}.
+    ?SERVER ! {store, Int}.
 
 print() ->
-    message_cluster({print}).
+    message_cluster({print}),
+    ok.
 
 reset() ->
-    message_cluster({reset}).
+    message_cluster({reset}),
+    ok.
 
 mapreduce(Map, Reduce) -> 
-	mapreduce(Map, Reduce, fun(X) -> X end).
+	mapreduce(Map, Reduce, fun(X) -> X end),
+	ok.
 
 mapreduce(Map, Reduce, Finalize) ->
     N = message_cluster({mapreduce, self(), Map, Reduce}),
@@ -34,7 +37,7 @@ mapreduce(Map, Reduce, Finalize) ->
     io:format("Final Result of Distributed MapReduce Job: ~p~n", [FinalResult]).
 
 rebalance() ->
-	mrs ! {rebalance}.
+	?SERVER ! {rebalance}.
 
 %server implementation ----------------------------------------
 start() ->
@@ -42,9 +45,9 @@ start() ->
 	FirstWorker = spawn(worker, server_loop, [[]]),
 	Workers = [FirstWorker],
 	Pid = spawn(?MODULE, server_loop, [Workers]),
-	register(mrs, Pid),
-	resource_discovery:add_local_resource(mrs, Pid),
-    resource_discovery:add_target_resource_type(mrs),
+	register(?SERVER, Pid),
+	resource_discovery:add_local_resource(?SERVER, Pid),
+    resource_discovery:add_target_resource_type(?SERVER),
     resource_discovery:trade_resources(),
     io:format(" Waiting for resource discovery...~n"),
     timer:sleep(?WAIT_FOR_RESOURCES),
@@ -138,6 +141,6 @@ collect_reduce_replies(N, Dict) -> %BUG: if a node leaves the cluster, this will
     end.
 
 message_cluster(MessageTuple) ->
-	{ok, Servers} = resource_discovery:fetch_resources(mrs),		    
+	{ok, Servers} = resource_discovery:fetch_resources(?SERVER),		    
     lists:foreach(fun(Pid) -> Pid ! MessageTuple end, Servers),
     length(Servers).
