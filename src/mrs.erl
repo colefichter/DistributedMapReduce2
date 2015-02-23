@@ -11,7 +11,7 @@ register_worker(Pid) ->
     ?SERVER ! {register_worker, Pid}.
 
 store(Integers) when is_list(Integers) ->
-	lists:foreach(fun(X) -> ?SERVER ! {store, X} end, Integers);	
+    lists:foreach(fun(X) -> ?SERVER ! {store, X} end, Integers);	
 store(Int) ->
     ?SERVER ! {store, Int}.
 
@@ -24,8 +24,8 @@ reset() ->
     ok.
 
 mapreduce(Map, Reduce) -> 
-	mapreduce(Map, Reduce, fun(X) -> X end),
-	ok.
+    mapreduce(Map, Reduce, fun(X) -> X end),
+    ok.
 
 mapreduce(Map, Reduce, Finalize) ->
     N = message_cluster({mapreduce, self(), Map, Reduce}),
@@ -41,12 +41,12 @@ rebalance() ->
 
 %server implementation ----------------------------------------
 start() ->
-	io:format(" Spawning MRS server...~n"),
-	FirstWorker = spawn(worker, server_loop, [[]]),
-	Workers = [FirstWorker],
-	Pid = spawn(?MODULE, server_loop, [Workers]),
-	register(?SERVER, Pid),
-	resource_discovery:add_local_resource(?SERVER, Pid),
+    io:format(" Spawning MRS server...~n"),
+    FirstWorker = spawn(worker, server_loop, [[]]),
+    Workers = [FirstWorker],
+    Pid = spawn(?MODULE, server_loop, [Workers]),
+    register(?SERVER, Pid),
+    resource_discovery:add_local_resource(?SERVER, Pid),
     resource_discovery:add_target_resource_type(?SERVER),
     resource_discovery:trade_resources(),
     io:format(" Waiting for resource discovery...~n"),
@@ -76,10 +76,10 @@ server_loop(Workers) -> % The main processing loop for the server.
 	    Worker ! {store, Int},
 	    server_loop(Workers);	  
 	{rebalance} ->
-		io:format("Rebalancing Data...~n"),
-		NumWorkers = length(Workers),
-		From = self(),
-		_unused = lists:foldl(fun(Worker, Index) ->
+	    io:format("Rebalancing Data...~n"),
+	    NumWorkers = length(Workers),
+	    From = self(),
+	    _unused = lists:foldl(fun(Worker, Index) ->
 				Worker ! {rebalance, From, NumWorkers, Index},
 				receive
 					{purged_data, Items} ->
@@ -87,7 +87,7 @@ server_loop(Workers) -> % The main processing loop for the server.
 				end,
 				Index + 1
 			end, 0, Workers),
-		server_loop(Workers);
+	    server_loop(Workers);
 	{print} ->
 	    io:format("Workers: ~p~n", [Workers]),
 	    lists:foreach(fun (Pid) ->  Pid ! {print} end, Workers),
@@ -103,7 +103,7 @@ server_loop(Workers) -> % The main processing loop for the server.
     end.
 
 collect_map_replies(N) ->
-	collect_map_replies(N, dict:new()).
+    collect_map_replies(N, dict:new()).
 
 collect_map_replies(0, Dict) ->
     Dict;
@@ -120,7 +120,7 @@ collect_map_replies(N, Dict) ->
     end.
 
 collect_reduce_replies(N) ->
-	collect_reduce_replies(N, dict:new()).
+    collect_reduce_replies(N, dict:new()).
 
 collect_reduce_replies(0, Dict) ->    
     Values = [V || {_K, V} <- dict:to_list(Dict)],
@@ -141,6 +141,6 @@ collect_reduce_replies(N, Dict) -> %BUG: if a node leaves the cluster, this will
     end.
 
 message_cluster(MessageTuple) ->
-	{ok, Servers} = resource_discovery:fetch_resources(?SERVER),		    
+    {ok, Servers} = resource_discovery:fetch_resources(?SERVER),		    
     lists:foreach(fun(Pid) -> Pid ! MessageTuple end, Servers),
     length(Servers).
