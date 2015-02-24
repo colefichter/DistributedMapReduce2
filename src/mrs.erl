@@ -42,8 +42,7 @@ rebalance() ->
 %server implementation ----------------------------------------
 start() ->
 	io:format(" Spawning MRS server...~n"),
-	FirstWorker = spawn(worker, server_loop, [[]]),
-	Workers = [FirstWorker],
+	Workers = [],
 	Pid = spawn(?MODULE, server_loop, [Workers]),
 	register(?SERVER, Pid),
 	resource_discovery:add_local_resource(?SERVER, Pid),
