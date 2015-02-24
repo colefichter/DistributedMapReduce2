@@ -41,11 +41,11 @@ rebalance() ->
 
 %server implementation ----------------------------------------
 start() ->
-	io:format(" Spawning MRS server...~n"),
-	Workers = [],
-	Pid = spawn(?MODULE, server_loop, [Workers]),
-	register(?SERVER, Pid),
-	resource_discovery:add_local_resource(?SERVER, Pid),
+    io:format(" Spawning MRS server...~n"),
+    Workers = [],
+    Pid = spawn(?MODULE, server_loop, [Workers]),
+    register(?SERVER, Pid),
+    resource_discovery:add_local_resource(?SERVER, Pid),
     resource_discovery:add_target_resource_type(?SERVER),
     resource_discovery:trade_resources(),
     io:format(" Waiting for resource discovery...~n"),
