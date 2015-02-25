@@ -31,7 +31,7 @@ mean() ->
 						end, {0,0}, List),
 		     {Sum, Count}
 	     end,
-	Finalize = fun({Sum, Count}) -> Sum / Count end,
+    Finalize = fun({Sum, Count}) -> Sum / Count end,
     mrs:mapreduce(Map, Reduce, Finalize).
 
 
