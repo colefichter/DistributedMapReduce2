@@ -1,7 +1,7 @@
 Map Reduce Server (MRS) version 2
 =================================
 
-A tutorial for this project can be found at [http://erlang-tutorials.colefichter.ca/mapreduce1.html](http://erlang-tutorials.colefichter.ca/mapreduce2.html).
+A tutorial for this project can be found at [http://erlang-tutorials.colefichter.ca/mapreduce2.html](http://erlang-tutorials.colefichter.ca/mapreduce2.html).
 
 This project is a fully distributed version of [DistributedMapReduce](https://github.com/colefichter/DistributedMapReduce). It uses resource discovery within a cluster to operate in a fully peer-to-peer style, rather than using the master/slave configuration of the original project.
 
